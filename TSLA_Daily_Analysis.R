@@ -61,6 +61,13 @@ NON_NDVaR(TSLAD$Returns)
 summary(TSLAD_Invest)
 tail(TSLAD_Invest, n =1)
 
+
+# Analysis of Tesla Daily 
+# 
+# Jan1-2017 to December 31, 2019
+#
+# TSLAD Data
+
 y <- TSLAD$Returns[1:754]
 x <- 5000
 TSLAD_Invest <- KapitalGrowth(x, y)
@@ -73,6 +80,13 @@ NON_NDVaR(y)
 summary(TSLAD_Invest)
 tail(TSLAD_Invest, n =1)
 
+
+
+# Analysis of Tesla Daily 
+# 
+# Jan1-2020 to May 1, 2019
+#
+# TSLAD Data
 y <- TSLAD$Returns[-(1:754)]
 x <- 5000
 TSLAD_Invest <- KapitalGrowth(x, y)
@@ -85,3 +99,19 @@ NON_NDVaR(y)
 summary(TSLAD_Invest)
 tail(TSLAD_Invest, n =1)
 
+
+# Simulating Tesla Price Action Using Random Walk Theory
+# Mu and sigma of the Stock or Asset
+mu <- mean(TSLAD$Returns, na.rm = TRUE)
+sig <- sd(TSLAD$Returns, na.rm = TRUE)
+t <- 256
+
+
+# Start simulating prices
+price <- rep(NA,t)
+price[1] <- 430.26
+for(i in 2:t){
+  price[i] <- price[i-1] + price[i-1]*(rnorm(1,mu,sig)/100)
+}
+P.data <- data.frame(TSLAD$Adj.Close, price)
+plot(price, type = "o")
