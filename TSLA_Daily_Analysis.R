@@ -1,3 +1,45 @@
+# Preliminary Functions
+# 
+# Function for Determining Capital Growth over time
+KapitalGrowth <- function(x, y){
+  m <- length(y)
+  y <- y/100
+  k <- vector()
+  g <- vector()
+  k[1] <- x
+  for(i in 2:m){
+    g[i]<- k[i-1]*y[i]
+    k[i]<- k[i-1] + g[i]
+  }
+  return(k)
+}
+
+# Function for Determining Returns of a Given Stock or Index
+Returns_p <- function(x) {
+  Returns <- vector()
+  for(i in 2:length(x)){
+    Returns[i]  <- ((x[i] - x[i-1])/x[i-1])*100
+  }
+  return(Returns)
+}
+
+LagReturns1 <- function(x) {
+  LagReturns1 <- vector()
+  for(i in 2:length(x)){
+    LagReturns1[i] <- (x[i-1])
+  }
+  return(LagReturns1)
+}
+
+# Function for Determing the Value at Risk Assuming Normal Distribution
+NDVaR <- function(x){
+  MU <- mean(x, na.rm = T)
+  SD <- sd(x, na.rm = T)
+  NDV <- MU + qnorm(.05)*SD
+  return(NDV)
+}
+
+
 # Analysis of Tesla Daily 
 # 
 # Jan1-2017 to May1-2020
