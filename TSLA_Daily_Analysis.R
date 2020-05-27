@@ -39,6 +39,16 @@ NDVaR <- function(x){
   return(NDV)
 }
 
+# Function for Determing the Value at Risk Assuming Non-Normal Distribution
+NON_NDVaR <- function(x){
+  temp0 <- na.omit(x)
+  o.x <- sort(temp0,decreasing = F)
+  i <- .05*length(o.x)
+  i.r <- round(i)
+  d <- abs(i.r-1- i)
+  NNVaR <- o.x[i.r-1] + d*(abs(o.x[i.r-1]-o.x[i.r]))
+  return(NNVaR)
+}
 
 # Analysis of Tesla Daily 
 # 
@@ -140,3 +150,36 @@ for(j in 1:n){
 matplot(price, type = "l", pch = NULL)
 points(TSLAD$Adj.Close, col = "Red")
 abline(a = Starting_price, b = mu)
+
+
+# Testing Code for formatting output
+library(qwraps2)
+options(qwraps2_markup = "markdown")
+
+summary_statistics <-
+  list(
+    "Statistics" =
+      list(
+        "Mean (sd)" = ~qwraps2::mean_sd(Returns, na_rm = TRUE),
+        "median (Q1, Q3)" = ~qwraps2::median_iqr(Returns, na_rm = TRUE),
+        "min" = ~min(Returns, na.rm = TRUE),
+        "max" = ~max(Returns, na.rm = TRUE),
+        "Cumulative Return"= ~sum(Returns, na.rm = TRUE)
+      ),
+    "Value At Risk" =
+      list(
+        "Normal Distribution VaR" = ~NDVaR(Returns),
+        "Non-Normal Distributed VaR" = ~NON_NDVaR(Returns)
+      ),
+    "Investment" =
+      list(
+        "Purchase Price" = ~head(Adj.Close, n = 1),
+        "Sell Price" = ~tail(Adj.Close, n = 1),
+        "min" = ~min(Invest, na.rm = TRUE),
+        "max" = ~max(Invest, na.rm = TRUE),
+        "Ending Investment" = ~tail(Invest, n = 1)
+      )
+  )
+
+names(TSLAD)
+summary_table(TSLAD, summary_statistics)
