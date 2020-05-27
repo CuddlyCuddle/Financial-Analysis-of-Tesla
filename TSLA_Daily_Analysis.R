@@ -104,14 +104,39 @@ tail(TSLAD_Invest, n =1)
 # Mu and sigma of the Stock or Asset
 mu <- mean(TSLAD$Returns, na.rm = TRUE)
 sig <- sd(TSLAD$Returns, na.rm = TRUE)
-t <- 256
-
+t <- 837
+Starting_price <- 216.99
 
 # Start simulating prices
 price <- rep(NA,t)
-price[1] <- 430.26
+price[1] <- Starting_price
 for(i in 2:t){
   price[i] <- price[i-1] + price[i-1]*(rnorm(1,mu,sig)/100)
 }
 P.data <- data.frame(TSLAD$Adj.Close, price)
 plot(price, type = "o")
+points(TSLAD$Adj.Close, col = "Red")
+abline(a = Starting_price, b = mu)
+
+
+# Part 2 Simulating multiple stock movements
+# Simulating Tesla Price Action Using Random Walk Theory
+# Mu and sigma of the Stock or Asset 
+mu <- mean(TSLAD$Returns, na.rm = TRUE)
+sig <- sd(TSLAD$Returns, na.rm = TRUE)
+t <- 837
+n <- 10
+
+
+# Start simulating prices
+price <- matrix(data = NA, nrow = t, ncol = n)
+price[1,] <- 216.99
+for(j in 1:n){
+  for(i in 2:t){
+  price[i, j] <- price[i-1,j] + price[i-1,j]*(rnorm(1,mu,sig)/100)
+  }
+}
+
+matplot(price, type = "l", pch = NULL)
+points(TSLAD$Adj.Close, col = "Red")
+abline(a = Starting_price, b = mu)
