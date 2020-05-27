@@ -3,8 +3,8 @@
 ## Table of contents
 * [Introduction](#Introduction)
 * [Basic Analysis](#Basic Analysis)
-    *[About the Analysis](##About the Analysis)
-    *[Statistics](##Statistics)
+    *[About the Analysis](#About the Analysis)
+    *[Statistics](#Statistics)
 * [Stock Price Simulation](#setup)
 
 # Introduction
@@ -16,6 +16,6 @@ For this analysis, we want to analyze the longer-term returns and the possible r
 
 ## Statistics
   
-
+  
 # Stock Price Simulation
 
