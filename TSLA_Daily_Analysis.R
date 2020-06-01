@@ -123,9 +123,15 @@ price[1] <- Starting_price
 for(i in 2:t){
   price[i] <- price[i-1] + price[i-1]*(rnorm(1,mu,sig)/100)
 }
+Exp_Growth <- rep(NA, t)
+Exp_Growth <- Starting_price
+for(i in 2:t){
+  Exp_Growth[i] <- Exp_Growth[i-1]*(mu/100)+Exp_Growth[i-1]
+}
 P.data <- data.frame(TSLAD$Adj.Close, price)
 plot(price, type = "o")
 points(TSLAD$Adj.Close, col = "Red")
+points(Exp_Growth, col = "Purple")
 abline(a = Starting_price, b = mu)
 
 
@@ -155,7 +161,6 @@ abline(a = Starting_price, b = mu)
 # Testing Code for formatting output
 library(qwraps2)
 options(qwraps2_markup = "markdown")
-
 summary_statistics <-
   list(
     "Statistics" =
@@ -181,5 +186,5 @@ summary_statistics <-
       )
   )
 
-names(TSLAD)
 summary_table(TSLAD, summary_statistics)
+

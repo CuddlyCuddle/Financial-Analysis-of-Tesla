@@ -5,7 +5,7 @@
 * [Basic Analysis](#Basic Analysis)
     *[About the Analysis](#About the Analysis)
     *[Statistics](#Statistics)
-* [Stock Price Simulation](#setup)
+* [Stock Price Simulation](#Stock Price Simulation)
 
 # Introduction
   In this project, I demonstrate basic statistical analysis of stocks using Tesla as an example. For this analysis, a table of basic statistics is created using returns to determine the quality of the stock as an investment. In addition, a small simulation of stock price is conducted using the Monte Carlo simulation assuming that stocks follow a Geometric Distribution.
