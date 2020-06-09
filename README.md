@@ -3,9 +3,9 @@
 ## Table of contents
 * [Introduction](#Introduction)
 * [Basic Analysis](#Basic Analysis)
-    * [About the Analysis](##About the Analysis)
-    * [Statistics](##Price Statistics)
-    * [Percent Returns Statistics](##Percent Returns Statistics)
+    * [About the Analysis](#About the Analysis)
+    * [Statistics](#Price Statistics)
+    * [Percent Returns Statistics](#Percent Returns Statistics)
 * [Stock Price Simulation](#Stock Price Simulation)
 * [For More Information and the Results](#For more Information and the Results)
 * [References](#References)
