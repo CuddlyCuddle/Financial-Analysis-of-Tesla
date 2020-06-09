@@ -186,5 +186,5 @@ summary_statistics <-
       )
   )
 
-summary_table(TSLAD, summary_statistics)
+summary_table(TSLA, summary_statistics)
 
