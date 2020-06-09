@@ -1,12 +1,5 @@
 # A Basic Analysis of Stocks using Tesla
 
-## Table of contents
-* [Introduction](#Introduction)
-* [Basic Analysis](#Basic Analysis)
-* [Stock Price Simulation](#Stock Price Simulation)
-* [For More Information and the Results](#For more Information and the Results)
-* [References](#References)
-
 # Introduction
 In this project, I demonstrate basic statistical analysis of stocks using Tesla as an example. For this analysis, a table of basic statistics is created using returns to determine the quality of the stock as an investment. In addition, a small simulation of stock price is conducted using the Monte Carlo simulation assuming that stocks follow a Geometric Distribution.
 
@@ -27,7 +20,7 @@ This is an analysis of the returns for the given financial security, Tesla (TSLA
 The stock price simulation was done using Brownian motion, and it was compared against the true valuation of the stock and the deterministic projection of the stock valuation over the same period. The deterministic projection assumes that there is a natural upward drift in the valuation and the periods and the volatility determines the "shock" or the error from the deterministic drift. So, certris paribus, holding all else constant, there would be a natural increase in the valuation of a stock due to the devaluation of money (a phenomenon known as inflation).
 
 # For more Information and the Results
-Click here for more information on the analysis I am performing and for the outcome of the results.
+Click [here](https://cuddlycuddle.github.io/Financial-Analysis-of-Tesla/) for more information on the analysis I am performing and for the outcome of the results.
 
 # References
 
