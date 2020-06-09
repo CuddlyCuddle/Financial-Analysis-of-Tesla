@@ -55,7 +55,7 @@ NON_NDVaR <- function(x){
 # Jan1-2017 to May1-2020
 #
 # TSLAD Data
-TSLAD <- read.csv("C:/Users/jeanp/OneDrive/Econ 500/TSLAD.csv")
+TSLAD <- read.csv(".../TSLAD.csv")
 
 TSLAD$Returns <- Returns_p(TSLAD$Adj.Close)
 
