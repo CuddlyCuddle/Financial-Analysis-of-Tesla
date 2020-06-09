@@ -1,0 +1,184 @@
+---
+title: "Your Document Title"
+author: "Document Author"
+date: "`r Sys.Date()`"
+output:
+  prettydoc::html_pretty:
+    toc: TRUE
+    theme: architect
+    highlight: github
+---
+
+## An Introduction into Tesla
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+library(plotly)
+library(quantmod)
+library(qwraps2)
+library(knitr)
+library(dplyr)
+library(e1071)
+
+
+# Preliminary Functions
+# 
+# Function for Determining Capital Growth over time
+KapitalGrowth <- function(x, y){
+  m <- length(y)
+  y <- y/100
+  k <- vector()
+  g <- vector()
+  k[1] <- x
+  for(i in 2:m){
+    g[i]<- k[i-1]*y[i]
+    k[i]<- k[i-1] + g[i]
+  }
+  return(k)
+}
+
+
+
+# Function for Determining Returns of a Given Stock or Index
+Returns_p <- function(x) {
+  Returns <- vector()
+  for(i in 2:length(x)){
+    Returns[i]  <- ((x[i] - x[i-1])/x[i-1])*100
+  }
+  return(Returns)
+}
+
+
+
+LagReturns1 <- function(x) {
+  LagReturns1 <- vector()
+  for(i in 2:length(x)){
+    LagReturns1[i] <- (x[i-1])
+  }
+  return(LagReturns1)
+}
+
+# Function for Determing the Value at Risk Assuming Normal Distribution
+NDVaR <- function(x){
+  MU <- mean(x, na.rm = T)
+  SD <- sd(x, na.rm = T)
+  NDV <- MU + qnorm(.05)*SD
+  return(NDV)
+}
+
+# Function for Determing the Value at Risk Assuming Non-Normal Distribution
+NON_NDVaR <- function(x){
+  temp0 <- na.omit(x)
+  o.x <- sort(temp0,decreasing = F)
+  i <- .05*length(o.x)
+  i.r <- round(i)
+  d <- abs(i.r-1- i)
+  NNVaR <- o.x[i.r-1] + d*(abs(o.x[i.r-1]-o.x[i.r]))
+  return(NNVaR)
+}
+
+LagReturns1 <- function(x) {
+  LagReturns1 <- vector()
+  for(i in 2:length(x)){
+    LagReturns1[i] <- (x[i-1])
+  }
+  return(LagReturns1)
+}
+
+tex2markdown <- function(texstring) {
+  writeLines(text = texstring,
+             con = myfile <- tempfile(fileext = ".tex"))
+  texfile <- pandoc(input = myfile, format = "html")
+  cat(readLines(texfile), sep = "\n")
+  unlink(c(myfile, texfile))
+}
+
+Deterministic <- function(x, y, w){
+  LinearDeterministic <- rep(NA, w)
+  LinearDeterministic[1] <- y
+    for(i in 2:w) {
+    ExpDeterministic[i] <- ExpDeterministic[i-1]*x + ExpDeterministic[i-1]
+    }
+  return(ExpDeterministic)
+}
+
+# Creating a summary statistics table for the returns 
+options(qwraps2_markup = "markdown")
+summary_statistics <-
+  list(
+    "Statistics" =
+      list(
+        "Mean (sd)" = ~qwraps2::mean_sd(Returns, na_rm = TRUE),
+        "median (Q1, Q3)" = ~qwraps2::median_iqr(Returns, na_rm = TRUE),
+        "min" = ~min(Returns, na.rm = TRUE),
+        "max" = ~max(Returns, na.rm = TRUE),
+        "Cumulative Return"= ~sum(Returns, na.rm = TRUE)
+      ),
+    "Value At Risk" =
+      list(
+        "Normally Distributed VaR" = ~NDVaR(Returns),
+        "Non-Normally Distributed VaR" = ~NON_NDVaR(Returns)
+      )
+  )
+
+## Pulling in the Datasets
+TSLA <- getSymbols("TSLA", src = "yahoo", auto.assign = FALSE)
+index("", )
+TSLA_M <- getSymbols("TSLA", src = "yahoo", auto.assign = FALSE, periodicity = "monthly")
+
+## Creating the Variable Date
+TSLA <- data.frame(Date=index(TSLA),coredata(TSLA))
+TSLA_M <- data.frame(Date=index(TSLA_M),coredata(TSLA_M))
+
+## Creating the Variable Returns
+TSLA$Returns <- Returns_p(TSLA$TSLA.Adjusted)
+```
+
+
+# Tesla Inc. Background
+Tesla was founded in 2003 by a group of engineers with the goal to create electric vehicles that rivaled gasoline vehicles— “people didn’t need to compromise to drive electric.” In 2008, the company launched the Model S Roadster which had applied new battery technology and an electric powertrain. The company had its initial public offering in June 29, 2010 at approximately $17 per share. In 2015, the company expanded its products with the Model X utility vehicle, a lower priced sedan known as the Model 3, a semi-truck, and a pickup truck known as the Cybertruck. All of the vehicles are manufactured in Fremont, California and Shanghai, China and uses strict safety standards for their employees and provides employees with ways to improve productivity so improvements can be made quickly. Now, Tesla strives to help the world stop relying on fossil fuels with scalable clean energy and energy storage products by providing a sustainable energy ecosystem by offering products such as the Powerwall, Powerpack, and Solar Roof.
+
+
+# Tesla Inc. Stock Valuations
+```{r, echo = FALSE}
+fig <- TSLA %>% plot_ly(x = ~Date, type = "candlestick",
+                      open = ~TSLA.Open, close = ~TSLA.Close,
+                      high = ~TSLA.High, low = ~TSLA.Low) 
+fig <- fig %>% layout(title = "Tesla (Daily) Candlestick Chart", 
+                      xaxis = list(rangeslider = list(visible = F)),
+                      yaxis = list(title = "Valuation (USD)")
+                      )
+fig
+```
+
+
+
+# Returns Table of Statistics(%)
+```{r, echo = FALSE}
+kable(summary_table( na.omit(TSLA), summary_statistics), col.names = "Returns (%)")
+```
+
+
+# Returns Against Time
+```{r, echo = FALSE}
+fig <- TSLA %>% plot_ly(x = ~Date, y = ~Returns, type = "scatter", mode = "lines")
+fig <- fig %>% layout(title = "Tesla Daily Returns (%)",
+                      xaxis = list(rangeslider = list(visible = T, type = "date"), title = "Date"),
+                      yaxis = list(title = "Returns (%)"))
+fig
+```
+
+
+# Returns (%) Frequency Distribution
+```{r, echo = FALSE}
+fig <- TSLA %>% plot_ly(x = ~Returns, type = "histogram")
+fig <- fig %>% layout(title = "Tesla Returns (%) Histogram",
+                      xaxis = list(title = "Returns (%)"),
+                      yaxis = list(title = "Frequency"))
+fig
+```
+
+
+
+
+
+
