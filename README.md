@@ -3,9 +3,9 @@
 ## Table of contents
 * [Introduction](#Introduction)
 * [Basic Analysis](#Basic Analysis)
-    *[About the Analysis](##About the Analysis)
-    *[Statistics](##Price Statistics)
-    *[Statistics](##Return (%) Statistics)
+    * [About the Analysis](##About the Analysis)
+    * [Statistics](##Price Statistics)
+    * [Percent Returns Statistics](##Percent Returns Statistics)
 * [Stock Price Simulation](#Stock Price Simulation)
 * [For More Information and the Results](#For more Information and the Results)
 * [References](#References)
@@ -21,7 +21,7 @@ For this analysis, we want to analyze the longer-term returns and the possible r
 Elementary statistics on the price based more on the mathematice methods within the scope of Day trading. 
 
 
-## Return (%) Statistics
+## Percent Returns Statistics
 This is an analysis of the returns for the given financial security, Tesla (TSLA) stock, and the returns over a given period. The reason why it is important to track its returns is to develop an understand of the price movements for a relative time frame, in addition to the fact that it allows a comparison of price movements accross different assets. Because it allows a comparison accross different assets, risk analysis and other analysis can be done allowing for the investor to make more informed decisions upon choosing investments and investment strategies. For instance, perhaps the investor is fairly risk adverse, so long as the mean returns for an investment outperforms inflation and the general economic market with relatively low volatily then that would be an optimal choice. However, another invester who is a risk taker, would be willing to make an investment with more volatility as long as the expected returns are relatively greater than other options. 
 
 
