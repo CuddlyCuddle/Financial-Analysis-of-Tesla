@@ -1,6 +1,6 @@
 ---
-title: "Your Document Title"
-author: "Document Author"
+title: "Simulation of Tesla Prices"
+author: "Cuddly Cuddles (Jean-Pierre)"
 date: "`r Sys.Date()`"
 output:
   prettydoc::html_pretty:
@@ -141,32 +141,85 @@ Tesla was founded in 2003 by a group of engineers with the goal to create electr
 
 # Tesla Inc. Stock Valuations
 ```{r, echo = FALSE}
+prof <- list(text = "Tesla Shows Profit",
+          x = '2019-10-01',
+          y = 1.04,
+          xref = 'x',
+          yref = 'paper',
+          xanchor = 'Right',
+          showarrow = FALSE
+)
+
+d_l <- list(type = line,
+          x0 = '2019-10-01',
+          x1 = '2019-10-01',
+          y0 = 0,
+          y1 = 1,
+          xref = 'x',
+          yref = 'paper',
+          line = list(color = 'black',
+                      width = 0.5, dash = 'dash')
+)
+
 fig <- TSLA %>% plot_ly(x = ~Date, type = "candlestick",
                       open = ~TSLA.Open, close = ~TSLA.Close,
                       high = ~TSLA.High, low = ~TSLA.Low) 
 fig <- fig %>% layout(title = "Tesla (Daily) Candlestick Chart", 
                       xaxis = list(rangeslider = list(visible = F)),
-                      yaxis = list(title = "Valuation (USD)")
+                      yaxis = list(title = "Valuation (USD)"),
+                      annotations = prof,
+                      shapes = d_l
                       )
 fig
 ```
-
-
+The graph above is a candlestick chart representing the daily price valuation of Tesla stock, the candlestick refers to the visual representation of price data and it is comprised of two parts: the body and the shadows (commonly refered to as wicks), where the body represents the open and closing price of the security (red if the price closed below the open, green if the price closed above the open), and the bottom wick shows the lowest price of the trading session and the top wick shows the highest price of the trading session.  
+A point of reference is denoted in the graph and it is October 2019, approximately when Tesla begins to show and report profit. This event leads to  a massive increase in the stock's price and volitility which can be seen in "Tesla Daily Returns (%)."
 
 # Returns Table of Statistics(%)
 ```{r, echo = FALSE}
-kable(summary_table( na.omit(TSLA), summary_statistics), col.names = "Returns (%)")
+kable(summary_table(na.omit(TSLA), summary_statistics), col.names = "Returns (%)")
 ```
+  
+Based upon the daily statistics derived from the adjusted close for Tesla's adjusted closing price, the mean returns (%) is significantly different from the median returns (%); however, when looking at the skewness of the data, it is close to .5 but still less than it which means that it is only slightly skewed to the right. This skewness is most likely due to the change of behavior surrounding the stock as the company had begun showing consistent profit in addition there was a significant amount of convertable debt causing the valuation of the company to attain new highs. This price movement occured suddenly and likely contributes to the skewness of the returns. 
 
+$$
+\gamma_1 = \frac{\mu_3}{\mu_2^{3/2}}
+$$
+Where $\mu_2$ and $\mu_3$ are defined as the second and third central moments: 
+$$
+\mu_2 = E[(X-\mu)^2]
+\mu_3 = E[(X-\mu)^3]
+$$
 
 # Returns over Time
 ```{r, echo = FALSE}
+UB95 <- list(type = line,
+          x0 = 0,
+          x1 = 1,
+          y0 = 0.21 + 2*(3.45),
+          y1 = 0.21 + 2*(3.45),
+          yref = 'y',
+          xref = 'paper',
+          line = list(color = 'red',
+                      width = 0.5, dash = 'dash'))
+LB95 <- list(type = line,
+          x0 = 0,
+          x1 = 1,
+          y0 = 0.21 - 2*(3.45),
+          y1 = 0.21 - 2*(3.45),
+          yref = 'y',
+          xref = 'paper',
+          line = list(color = 'red',
+                      width = 0.5, dash = 'dash'))
 fig <- TSLA %>% plot_ly(x = ~Date, y = ~Returns, type = "scatter", mode = "lines")
 fig <- fig %>% layout(title = "Tesla Daily Returns (%)",
-                      xaxis = list(rangeslider = list(visible = T, type = "date"), title = "Date"),
-                      yaxis = list(title = "Returns (%)"))
+                      xaxis = list(rangeslider = list(visible = F, type = "date"), title = "Date"),
+                      yaxis = list(title = "Returns (%)"), shapes = list(UB95, LB95))
 fig
 ```
+
+  
+  Against time, the more volitile timeframes can be identified as a congragation of sharp movements up and/or down. From 2016 to 2018, it can be seen that there is consistent growth in the valuation accompanied by low volitility; however, when compared to the growth in 2019-2020, there is much more aggression in the movements as returns fall outside of the two standard deviation interval denoted by the dashed red horizontal lines.
 
 
 # Returns (%) Frequency Distribution
@@ -178,8 +231,89 @@ fig <- fig %>% layout(title = "Tesla Returns (%) Histogram",
 fig
 ```
 
+  
+  The histogram presented above demonstrates the skewness of the distribution as there are several outlying points on the right hand side of the gaussian curve. It can be noted that for most stocks, having a median return which is greater than 0 would be a strong longer investment when discounting everything else. This is due to the fact that a mean can have bias from influential data points such as the distribution presented above and a having a median which is greater than 0 would imply that on average and if everything remains constant, there would be a greater frequency of returns which are positive and a higher probability of positive returns. 
+
+## Simple Price Projection with Geometric Brownian Motion
+```{r, echo = FALSE}
+# Simulating Tesla Price Action Using Random Walk Theory
+# Mu and sigma of the Stock or Asset
+meed <- median(TSLA$Returns, na.rm = TRUE)
+mu <- mean(TSLA$Returns, na.rm = TRUE)
+sig <- sd(TSLA$Returns, na.rm = TRUE)
+t <- nrow(TSLA)
+Starting_price <- TSLA$TSLA.Adjusted[1]
+
+# Setting a Random seed such that results are replicable
+set.seed(1005)
+# Using Median Return to create deterministic price actions
+D_price <- rep(NA,t)
+D_price[1] <- Starting_price
+for(i in 2:t){
+  D_price[i] <- D_price[i-1]*(1 + meed/100)
+}
+
+# Start simulating prices
+price <- rep(NA,t)
+price[1] <- Starting_price
+for(i in 2:t){
+  price[i] <- price[i-1] + price[i-1]*(rnorm(1,mu,sig)/100)
+}
+
+set.seed(1)
+# GBM
+GBM <- rep(NA,t)
+GBM[1] <- Starting_price
+for(i in 2:t){
+  GBM[i] <- GBM[i-1]*(1 + mu/100 + sig*rnorm(1)/100)
+}
 
 
+# Visualizing Tesla 
+fig <- TSLA %>% plot_ly(x = ~Date, type = "candlestick",
+                      open = ~TSLA.Open, close = ~TSLA.Close,
+                      high = ~TSLA.High, low = ~TSLA.Low,
+                      name = "Price") 
+fig <- fig %>% add_lines(name = "Deterministic",x = ~Date, y = D_price, line = list(color = 'babyblue', width = 0.75), inherit = T)
+fig <- fig %>% add_lines(name = "Sim1",x = ~Date, y = price, line = list(color = 'purple', width = 0.75), inherit = T)
+fig <- fig %>% add_lines(name = "Sim2",x = ~Date, y = GBM, line = list(color = 'green', width = 0.75), inherit = T)
+fig <- fig %>% layout(title = "Tesla Simulation Chart", xaxis = list(rangeslider = list(visible = F)))
+fig
+```
+
+  In the graph presented above, there are several lines added: one is a deterministic price projection in orange using the median value of returns to demonstrate the possible price if there was no variation in the stock price (the reason the median is being used rather than the mean is that there is a mild positive skew), the other two simulations uses geometric brownian motion denoted by the equation:
+  $$
+S_t = S_{t-1}\cdot(1 + \mu\delta t + \sigma W_t \sqrt{\delta t}) 
+  $$
+In this situation, since the daily variance of the adjusted close is being used and the price is being determined on the daily, the change in t denoted by $\delta t = 1$. In addition, $W_t$ denotes a random process, $\mu$ is the mean return of a stock, $\sigma$ is the standard deviation of the stock, and $S_t$ is the price of the stock at time $t$ (thus, $S_{t-1}$ is the stock price one period prior to $S_t$).
 
 
+## Simple Price Projection with Geometric Brownian Motion
+```{r, echo = FALSE}
+# Simulating Tesla Price Action Using Random Walk Theory
+# Mu and sigma of the Stock or Asset
+mu <- mean(TSLA$Returns, na.rm = TRUE)
+sig <- sd(TSLA$Returns, na.rm = TRUE)
+t <- nrow(TSLA)
+Starting_price <- TSLA$TSLA.Adjusted[1]
+a <- 1000
 
+set.seed(1002)
+price <- matrix(NA, nrow = nrow(TSLA), a)
+price[1,] <- Starting_price
+for(j in 1:a){
+  for(i in 2:t){
+    price[i,j] <- price[i-1,j] + price[i-1,j]*(rnorm(1,mu,sig)/100)
+  }
+}
+
+
+sim1000 <- price[nrow(TSLA),]
+summary(sim1000)
+price_probs <- quantile(sim1000, prob = seq( .05, .95, by = .05))
+kable(price_probs, col.names = "Price at Simulation's End")
+summary(as.numeric(price))
+```
+
+The above notations display the cummulative distribution of the simulated stock price for 1000 simulated prices over a period of approximately 10 years. It can be noted that the current price of the stock is within the current cummulative distribution. This would be helpful when determining the risk and the possible price movements of a stock.
+This is an example of statistical thermodynamics applied to an economical system as this is a stochastic markov process. This can be further examined through statistical entropy, Fokker-Planck Equation, and Boltzmann/Gibbs study of entropy and statistics. 
